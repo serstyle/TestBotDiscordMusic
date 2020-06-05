@@ -1,9 +1,7 @@
-import {
-  Message,
-} from "discord.js";
+import { Message } from "discord.js";
 import { deleteMessage, voiceChannel, GuildDiscord } from "./units";
 
-export const isWrongChannel = (message: Message) => {
+export const isWrongChannel = async (message: Message) => {
   if (message.channel.id !== "718245594342096970") {
     deleteMessage(message);
     return message.reply("Va dans le channel music pour stop la music");
@@ -16,4 +14,12 @@ export const isUserInAVoiceChanel = (message: Message) => {
   }
 };
 
-export const isQueueEmpty = (server: GuildDiscord) => !server || !server.queue || server.queue.length === 0;
+export const isQueueEmpty = (server: GuildDiscord) =>
+  !server || !server.queue || server.queue.length === 0;
+
+export const check = async (message: Message) => {
+  const wrongChannel = await isWrongChannel(message);
+  if (wrongChannel) return wrongChannel;
+  const userInVC = await isUserInAVoiceChanel(message);
+  if (userInVC) return userInVC;
+};

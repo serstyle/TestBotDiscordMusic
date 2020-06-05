@@ -8,11 +8,11 @@ export interface GuildDiscord {
 }
 
 export enum MessageCommand {
-    PLAY = "!play",
-    STOP = "!stop",
-    PLAYLIST = "!playlist",
-    SKIP = "!skip",
-  }
+  PLAY = "!play",
+  STOP = "!stop",
+  PLAYLIST = "!playlist",
+  SKIP = "!skip",
+}
 
 export const voiceChannel = (message: Message) => {
   if (message.channel.type !== "text") return;
@@ -21,8 +21,12 @@ export const voiceChannel = (message: Message) => {
   return voiceChannel;
 };
 
-export const deleteMessage = async (message: Message) => {
-  //   await message.channel.delete();
+export const deleteMessage = (message: Message) => {
+  try {
+   return message.channel.messages.delete(message);
+  } catch (e) {
+    console.error(e);
+  }
 };
 
 export const playMusic = (
