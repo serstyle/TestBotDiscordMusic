@@ -1,9 +1,6 @@
 import { Client, Message } from "discord.js";
 import * as config from "./config.json";
-import {
-  isQueueEmpty,
-  check,
-} from "./helpers/conditions";
+import { isQueueEmpty, check } from "./helpers/conditions";
 import {
   playMusic,
   voiceChannel,
@@ -65,7 +62,6 @@ client.on("message", async (message) => {
       if (checkError) return checkError;
 
       server = servers[message.guild.id];
-
       if (server && server.dispatcher) server?.queue?.shift();
       playMusic(voiceChannel(message), message, server);
 

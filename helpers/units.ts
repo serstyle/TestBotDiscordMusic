@@ -36,7 +36,7 @@ export const playMusic = (
 ) => {
   vc.join().then((connection) => {
     if (isQueueEmpty(server))
-      message.reply("ajoute de la music avant de skip petit fou");
+      return message.reply("ajoute de la music avant de skip petit fou");
 
     message.channel.send(
       "C cette music qui se joue mtn lol: " + server.queue[0]
@@ -50,6 +50,7 @@ export const playMusic = (
     server.dispatcher.setVolume(0.5);
     server.dispatcher.on("finish", () => {
       server.queue.shift();
+      if(server.queue.length === 0) return;
       playMusic(vc, message, server);
     });
   });
