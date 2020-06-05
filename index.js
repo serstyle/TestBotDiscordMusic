@@ -62,30 +62,29 @@ var deleteMessage = function (message) { return __awaiter(void 0, void 0, void 0
         return [2 /*return*/];
     });
 }); };
+var playMusic = function (vc, message) {
+    vc.join().then(function (connection) {
+        var server = servers[message.guild.id];
+        if (!server || !server.queue[0])
+            message.reply("ajoute de la music avant de skip petit fou");
+        message.channel.send("C cette music qui se joue mtn lol: " + server.queue[0]);
+        var stream = ytdl(server.queue[0], {
+            filter: "audioonly"
+        });
+        server.dispatcher = connection.play(stream);
+        server.dispatcher.setVolume(0.5);
+        server.dispatcher.on("finish", function () {
+            server.queue.shift();
+            playMusic(vc, message);
+        });
+    });
+};
 var servers = {};
 client.on("message", function (message) { return __awaiter(void 0, void 0, void 0, function () {
-    var args, messageContent, playMusic, url, server, server, server;
+    var args, url, server, server, server;
     var _a;
     return __generator(this, function (_b) {
         args = message.content.split(" ");
-        messageContent = message.content;
-        playMusic = function (vc) {
-            vc.join().then(function (connection) {
-                var server = servers[message.guild.id];
-                if (!server || !server.queue[0])
-                    message.reply("ajoute de la music avant de skip petit fou");
-                message.channel.send("C cette music qui se joue mtn lol: " + server.queue[0]);
-                var stream = ytdl(server.queue[0], {
-                    filter: "audioonly"
-                });
-                server.dispatcher = connection.play(stream);
-                server.dispatcher.setVolume(0.5);
-                server.dispatcher.on("finish", function () {
-                    server.queue.shift();
-                    playMusic(vc);
-                });
-            });
-        };
         switch (args[0]) {
             case MessageCommand.PLAY:
                 if (message.channel.id !== "718245594342096970") {
@@ -103,7 +102,7 @@ client.on("message", function (message) { return __awaiter(void 0, void 0, void 
                     return [2 /*return*/, message.reply("please join a voice channel first!")];
                 }
                 if (server.queue.length === 1) {
-                    playMusic(voiceChannel(message));
+                    playMusic(voiceChannel(message), message);
                 }
                 else {
                     message.channel.send("La musique a ete ajoute a la queue patiente un peu :) ");
@@ -130,7 +129,7 @@ client.on("message", function (message) { return __awaiter(void 0, void 0, void 
                 server = servers[message.guild.id];
                 if (server && server.dispatcher)
                     (_a = server === null || server === void 0 ? void 0 : server.queue) === null || _a === void 0 ? void 0 : _a.shift();
-                playMusic(voiceChannel(message));
+                playMusic(voiceChannel(message), message);
                 break;
             case "!playlist":
                 server = servers[message.guild.id];

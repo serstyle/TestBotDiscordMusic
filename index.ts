@@ -31,49 +31,53 @@ const deleteMessage = async (message: Message) => {
   //   await message.channel.delete();
 };
 
+const playMusic = (vc: VoiceChannel, message: Message) => {
+  vc.join().then((connection) => {
+    var server = servers[message.guild.id];
+    if (!server || !server.queue[0])
+      message.reply("ajoute de la music avant de skip petit fou");
+    message.channel.send(
+      "C cette music qui se joue mtn lol: " + server.queue[0]
+    );
+
+    const stream = ytdl(server.queue[0], {
+      filter: "audioonly",
+    });
+    server.dispatcher = connection.play(stream);
+    server.dispatcher.setVolume(0.5);
+    server.dispatcher.on("finish", () => {
+      server.queue.shift();
+      playMusic(vc, message);
+    });
+  });
+};
+
 var servers: {} = {};
+
 client.on("message", async (message) => {
   const args = message.content.split(" ");
 
-  const playMusic = (vc: VoiceChannel) => {
-    vc.join().then((connection) => {
-      var server = servers[message.guild.id];
-      if (!server || !server.queue[0])
-        message.reply("ajoute de la music avant de skip petit fou");
-      message.channel.send(
-        "C cette music qui se joue mtn lol: " + server.queue[0]
-      );
+  if (message.channel.type !== "text") return;
 
-      const stream = ytdl(server.queue[0], {
-        filter: "audioonly",
-      });
-      server.dispatcher = connection.play(stream);
-      server.dispatcher.setVolume(0.5);
-      server.dispatcher.on("finish", () => {
-        server.queue.shift();
-        playMusic(vc);
-      });
-    });
-  };
-
+  let server;
   switch (args[0]) {
+    //play the music or add to the playlist
     case MessageCommand.PLAY:
       if (message.channel.id !== "718245594342096970") {
         deleteMessage(message);
         return message.reply("Va dans le channel music pour ajouter ta music");
       }
-      if (message.channel.type !== "text") return;
       const url = args[1];
       if (!servers[message.guild.id]) servers[message.guild.id] = { queue: [] };
 
-      var server = servers[message.guild.id];
+      server = servers[message.guild.id];
       server.queue.push(url);
 
       if (!voiceChannel(message)) {
         return message.reply("please join a voice channel first!");
       }
       if (server.queue.length === 1) {
-        playMusic(voiceChannel(message));
+        playMusic(voiceChannel(message), message);
       } else {
         message.channel.send(
           "La musique a ete ajoute a la queue patiente un peu :) "
@@ -81,29 +85,37 @@ client.on("message", async (message) => {
       }
 
       break;
+
+    //stop the music and kick the bot
+
     case "!stop":
       if (message.channel.id !== "718245594342096970") {
         deleteMessage(message);
         return message.reply("Va dans le channel music pour stop la music");
       }
-      if (message.channel.type !== "text") return;
       if (!voiceChannel(message)) {
         return message.reply("please join a voice channel first!");
       }
       server.queue.splice(0, server.queue.length);
       voiceChannel(message).leave();
       break;
+
+    //skip the music
+
     case "!skip":
       if (message.channel.id !== "718245594342096970") {
         deleteMessage(message);
         return message.reply("Va dans le channel music pour skip");
       }
-      var server = servers[message.guild.id];
+      server = servers[message.guild.id];
       if (server && server.dispatcher) server?.queue?.shift();
-      playMusic(voiceChannel(message));
+      playMusic(voiceChannel(message), message);
       break;
+
+    //playlist show the playlist
+
     case "!playlist":
-      var server = servers[message.guild.id];
+      server = servers[message.guild.id];
       if (!server || !server.queue || server.queue.length === 0)
         return message.reply("pas de music");
       message.reply(
