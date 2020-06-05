@@ -42,7 +42,7 @@ client.on("message", async (message) => {
         playMusic(voiceChannel(message), message, server);
       } else {
         message.channel.send(
-          "La musique a ete ajoute a la queue patiente un peu :) "
+          "La musique a ete ajoute a la queue patiente un peu "
         );
       }
 
