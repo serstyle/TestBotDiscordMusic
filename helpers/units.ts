@@ -45,8 +45,10 @@ export const playMusic = (
     // needed for the discord to play a stream
     const stream = ytdl(server.queue[0].url, {
       filter: "audioonly",
+      highWaterMark: 1 << 25,
+      quality: "highestaudio",
     });
-    server.dispatcher = connection.play(stream);
+    server.dispatcher = connection.play(stream, { highWaterMark: 1 });
     server.dispatcher.setVolume(0.5);
     server.dispatcher.on("finish", () => {
       server.queue.shift();
