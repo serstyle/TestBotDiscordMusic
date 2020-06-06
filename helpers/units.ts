@@ -3,7 +3,7 @@ import * as ytdl from "ytdl-core";
 import { isQueueEmpty } from "./conditions";
 
 export interface GuildDiscord {
-  queue: string[];
+  queue: {url: string, title: string}[];
   dispatcher?: StreamDispatcher;
 }
 
