@@ -4,7 +4,7 @@ import { deleteMessage, voiceChannel, GuildDiscord } from "./units";
 export const isWrongChannel = async (message: Message) => {
   if (message.channel.id !== "718245594342096970") {
     deleteMessage(message);
-    return message.reply("Va dans le channel music pour stop la music");
+    return message.reply("Va dans le channel music pour controler la music");
   }
 };
 
