@@ -1,4 +1,4 @@
-import {ServerDiscord} from "./Server";
+import { ServerDiscord } from "./Server";
 
 export class ServersDiscord {
   servers: {};

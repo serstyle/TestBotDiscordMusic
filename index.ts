@@ -79,7 +79,7 @@ client.on("message", async (message) => {
       if (isQueueEmpty(server.getQueue()))
         return message.reply("ajoute de la music avant de skip petit fou");
 
-      if (server && server.dispatcher) server.removeFromQueue();
+      server.removeFromQueue();
 
       playMusic(voiceChannel(message), message, server);
 
