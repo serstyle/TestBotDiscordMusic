@@ -39,15 +39,10 @@ client.on("message", async (message) => {
 
       const youtubeItem = await getYoutubeUrl(keywords);
 
-<<<<<<< HEAD
-      if (youtubeItem.url === "no link")
-        return message.reply("sorry j'ai pas trouve ce que tu veux frr");
-=======
       if (youtubeItem.url === "no link") {
         console.log("no link");
         return message.reply("sorry j'ai pas trouve ce que tu veux frr");
       }
->>>>>>> branch2
 
       if (!servers[message.guild.id])
         servers[message.guild.id] = { queue: [] } as {
