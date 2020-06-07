@@ -1,12 +1,10 @@
-import { VoiceChannel, Message, StreamDispatcher } from "discord.js";
+import { VoiceChannel, Message } from "discord.js";
 import * as ytdl from "ytdl-core";
 import { isQueueEmpty } from "./conditions";
 import fetch from "node-fetch";
-export interface GuildDiscord {
-  queue: { url: string; title: string }[];
-  dispatcher?: StreamDispatcher;
-}
 import * as config from "../config.json";
+import { ServerDiscord } from "../Models/Server";
+
 export enum MessageCommand {
   PLAY = "!play",
   STOP = "!stop",
@@ -32,27 +30,28 @@ export const deleteMessage = (message: Message) => {
 export const playMusic = (
   vc: VoiceChannel,
   message: Message,
-  server: GuildDiscord
+  server: ServerDiscord
 ) => {
   vc.join().then((connection) => {
-    if (isQueueEmpty(server))
-      return message.reply("ajoute de la music avant de skip petit fou");
+    const serverQueue = server.getQueue();
 
     message.channel.send(
-      `C cette music qui se joue mtn lol: "${server.queue[0].title}" et le lien c est ${server.queue[0].url}`
+      `C cette music qui se joue mtn lol: "${serverQueue[0].title}" et le lien c est ${serverQueue[0].url}`
     );
 
-    // needed for the discord to play a stream
-    const stream = ytdl(server.queue[0].url, {
+    // create a stream from the url with YTDL.
+    // uses by the connection.play method.
+    const stream = ytdl(serverQueue[0].url, {
       filter: "audioonly",
       highWaterMark: 1 << 25,
       quality: "highestaudio",
     });
-    server.dispatcher = connection.play(stream, { highWaterMark: 1 });
-    server.dispatcher.setVolume(0.5);
-    server.dispatcher.on("finish", () => {
-      server.queue.shift();
-      if (server.queue.length === 0) return;
+
+    server.createDispatcherToConnectPlay(connection, stream);
+
+    server.dispatcherAction("finish", () => {
+      server.removeFromQueue();
+      if (isQueueEmpty(serverQueue)) return;
       playMusic(vc, message, server);
     });
   });
@@ -63,8 +62,10 @@ export const getYoutubeUrl = async (keywords: string) => {
     `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${keywords}&type=video&key=${config.API_KEY_YOUTUBE}`
   );
   const youtubeLinks = await response.json();
+
   console.log(keywords);
   console.log("json parse: ".toUpperCase(), youtubeLinks);
+  
   const firstYoutubeLink =
     youtubeLinks && youtubeLinks.items.length > 0
       ? `https://www.youtube.com/watch?v=${youtubeLinks.items[0].id.videoId}`

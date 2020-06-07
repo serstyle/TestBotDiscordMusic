@@ -1,14 +1,15 @@
 import { Client, Message } from "discord.js";
 import * as config from "./config.json";
-import { isQueueEmpty, check } from "./helpers/conditions";
+import { isQueueEmpty, check, isLastMusic } from "./helpers/conditions";
 
 import {
   playMusic,
   voiceChannel,
-  GuildDiscord,
   MessageCommand,
   getYoutubeUrl,
 } from "./helpers/units";
+import { ServersDiscord } from "./Models/Servers";
+import { ServerDiscord } from "./Models/Server";
 
 const client = new Client();
 
@@ -16,21 +17,26 @@ client.once("ready", () => {
   console.log("Ready!");
 });
 
-const servers: {} = {};
+const instanceServers = new ServersDiscord();
 
 client.on("message", async (message) => {
   const args = message.content.split(" ");
 
   if (message.channel.type !== "text") return;
-  console.log("args : ", args);
-  let server: GuildDiscord;
+
+  if (!instanceServers.getServer(message.guild.id))
+    instanceServers.createServer(message.guild.id);
+
+  let server: ServerDiscord = instanceServers.getServer(message.guild.id);
+
   let checkError: Message;
+
   switch (args[0]) {
     //play the music or add to the playlist
     case MessageCommand.PLAY:
+
       //arrange the args to be one keywords string
-      const arrKeywords = args.slice(1);
-      const keywords = arrKeywords.join(" ");
+      const keywords = args.slice(1).join(" ");
 
       checkError = await check(message);
       if (checkError) return checkError;
@@ -41,15 +47,9 @@ client.on("message", async (message) => {
         return message.reply("dsl j'ai pas trouve ce que tu veux frr");
       }
 
-      if (!servers[message.guild.id])
-        servers[message.guild.id] = { queue: [] } as {
-          queue: { url: string; title: string }[];
-        };
+      server.addMusicToQueue(youtubeItem);
 
-      server = servers[message.guild.id];
-      server.queue.push(youtubeItem);
-
-      if (server.queue.length === 1) {
+      if (isLastMusic(server.getQueue())) {
         playMusic(voiceChannel(message), message, server);
       } else {
         message.channel.send(
@@ -64,8 +64,9 @@ client.on("message", async (message) => {
     case MessageCommand.STOP:
       checkError = await check(message);
       if (checkError) return checkError;
-      server = servers[message.guild.id];
-      if (server) server.queue = [];
+
+      if (server) server.deleteQueue();
+
       voiceChannel(message).leave();
       break;
 
@@ -75,8 +76,11 @@ client.on("message", async (message) => {
       checkError = await check(message);
       if (checkError) return checkError;
 
-      server = servers[message.guild.id];
-      if (server && server.dispatcher) server?.queue?.shift();
+      if (isQueueEmpty(server.getQueue()))
+        return message.reply("ajoute de la music avant de skip petit fou");
+
+      if (server && server.dispatcher) server.removeFromQueue();
+
       playMusic(voiceChannel(message), message, server);
 
       break;
@@ -87,10 +91,10 @@ client.on("message", async (message) => {
       checkError = await check(message);
       if (checkError) return checkError;
 
-      server = servers[message.guild.id];
+      if (isQueueEmpty(server.getQueue())) return message.reply("pas de music");
 
-      if (isQueueEmpty(server)) return message.reply("pas de music");
-      const titles = server.queue.map((item) => item.title);
+      const titles = server.getQueue().map((item) => item.title);
+
       message.reply(`La playlist actuel est compose de : ${titles.join(", ")}`);
 
       break;

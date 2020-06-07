@@ -1,5 +1,6 @@
 import { Message } from "discord.js";
-import { deleteMessage, voiceChannel, GuildDiscord } from "./units";
+import { deleteMessage, voiceChannel } from "./units";
+import { ServerDiscord, MusicToStream } from "../Models/Server";
 
 export const isWrongChannel = async (message: Message) => {
   if (message.channel.id !== "718245594342096970") {
@@ -14,8 +15,8 @@ export const isUserInAVoiceChanel = (message: Message) => {
   }
 };
 
-export const isQueueEmpty = (server: GuildDiscord) =>
-  !server || !server.queue || server.queue.length === 0;
+export const isQueueEmpty = (queue: MusicToStream[]) =>
+  !queue || queue.length === 0;
 
 export const check = async (message: Message) => {
   const wrongChannel = await isWrongChannel(message);
@@ -23,3 +24,5 @@ export const check = async (message: Message) => {
   const userInVC = await isUserInAVoiceChanel(message);
   if (userInVC) return userInVC;
 };
+
+export const isLastMusic = (queue: MusicToStream[]) => queue.length === 1;
