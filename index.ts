@@ -18,8 +18,6 @@ client.once("ready", () => {
 
 const servers: {} = {};
 
-
-
 client.on("message", async (message) => {
   const args = message.content.split(" ");
 
@@ -39,8 +37,10 @@ client.on("message", async (message) => {
 
       const youtubeItem = await getYoutubeUrl(keywords);
 
-      if (youtubeItem.url === "no link")
-        return message.reply("dsl g pas trouve ce que tu veux frr");
+      if (youtubeItem.url === "no link") {
+        console.log("no link");
+        return message.reply("sorry j'ai pas trouve ce que tu veux frr");
+      }
 
       if (!servers[message.guild.id])
         servers[message.guild.id] = { queue: [] } as {
@@ -92,9 +92,7 @@ client.on("message", async (message) => {
 
       if (isQueueEmpty(server)) return message.reply("pas de music");
       const titles = server.queue.map((item) => item.title);
-      message.reply(
-        `La playlist actuel est compose de : ${titles.join(", ")}` 
-      );
+      message.reply(`La playlist actuel est compose de : ${titles.join(", ")}`);
 
       break;
   }
