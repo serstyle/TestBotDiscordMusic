@@ -38,8 +38,7 @@ client.on("message", async (message) => {
       const youtubeItem = await getYoutubeUrl(keywords);
 
       if (youtubeItem.url === "no link") {
-        console.log("no link");
-        return message.reply("sorry j'ai pas trouve ce que tu veux frr");
+        return message.reply("dsl pas trouve ce que tu veux frr");
       }
 
       if (!servers[message.guild.id])
