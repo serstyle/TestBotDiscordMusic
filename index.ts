@@ -76,7 +76,7 @@ client.on("message", async (message) => {
       if (checkError) return checkError;
 
       if (isQueueEmpty(server.Queue))
-        return message.reply("ajoute de la music avant de skip petit fou 🤪🤪");
+        return message.reply("ajoute de la music avant de skip grand fou 🤪🤪");
 
       server.removeFromQueue();
 
