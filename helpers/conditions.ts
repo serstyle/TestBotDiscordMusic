@@ -1,17 +1,17 @@
 import { Message } from "discord.js";
 import { deleteMessage, voiceChannel } from "./units";
-import { ServerDiscord, MusicToStream } from "../Models/Server";
+import { MusicToStream } from "../Models/Server";
 
 export const isWrongChannel = async (message: Message) => {
   if (message.channel.id !== "718245594342096970") {
     deleteMessage(message);
-    return message.reply("Va dans le channel music pour controler la music");
+    return message.reply("Va dans le channel music pour controler la music 😐");
   }
 };
 
 export const isUserInAVoiceChanel = (message: Message) => {
   if (!voiceChannel(message)) {
-    return message.reply("please join a voice channel first!");
+    return message.reply("please join a voice channel first! 😐");
   }
 };
 

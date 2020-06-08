@@ -3,7 +3,6 @@ import * as config from "./config.json";
 import { isQueueEmpty, check, isLastMusic } from "./helpers/conditions";
 
 import {
-  playMusic,
   voiceChannel,
   MessageCommand,
   getYoutubeUrl,
@@ -26,7 +25,7 @@ client.on("message", async (message) => {
 
   if (!instanceServers.getServer(message.guild.id))
     instanceServers.createServer(message.guild.id);
-
+    
   let server: ServerDiscord = instanceServers.getServer(message.guild.id);
 
   let checkError: Message;
@@ -44,16 +43,16 @@ client.on("message", async (message) => {
       const youtubeItem = await getYoutubeUrl(keywords);
 
       if (youtubeItem.url === "no link") {
-        return message.reply("dsl j'ai pas trouve ce que tu veux frr");
+        return message.reply("dsl j'ai pas trouve ce que tu veux frr 😬😬");
       }
 
       server.addMusicToQueue(youtubeItem);
 
-      if (isLastMusic(server.getQueue())) {
-        playMusic(voiceChannel(message), message, server);
+      if (isLastMusic(server.Queue)) {
+        server.playMusic(voiceChannel(message), message);
       } else {
         message.channel.send(
-          `La musique "${youtubeItem.title}" a ete ajoute a la queue patiente un peu `
+          `La musique "${youtubeItem.title}" a ete ajoute a la queue patiente un peu 🎉💤`
         );
       }
 
@@ -76,12 +75,12 @@ client.on("message", async (message) => {
       checkError = await check(message);
       if (checkError) return checkError;
 
-      if (isQueueEmpty(server.getQueue()))
-        return message.reply("ajoute de la music avant de skip petit fou");
+      if (isQueueEmpty(server.Queue))
+        return message.reply("ajoute de la music avant de skip petit fou 🤪🤪");
 
       server.removeFromQueue();
 
-      playMusic(voiceChannel(message), message, server);
+      server.playMusic(voiceChannel(message), message);
 
       break;
 
@@ -91,11 +90,11 @@ client.on("message", async (message) => {
       checkError = await check(message);
       if (checkError) return checkError;
 
-      if (isQueueEmpty(server.getQueue())) return message.reply("pas de music");
+      if (isQueueEmpty(server.Queue)) return message.reply("pas de music 😬😬");
 
-      const titles = server.getQueue().map((item) => item.title);
+      const titles = server.Queue.map((item) => item.title);
 
-      message.reply(`La playlist actuel est compose de : ${titles.join(", ")}`);
+      message.reply(`🎶🎶 La playlist actuel est compose de : ${titles.join(", ")}`);
 
       break;
   }
