@@ -35,7 +35,10 @@ export const getYoutubeUrl = async (keywords: string) => {
 
   const firstYoutubeLink =
     youtubeLinks && youtubeLinks.items.length > 0
-      ? `https://www.youtube.com/watch?v=${youtubeLinks.items[0].id.videoId}`
-      : "no link";
-  return { url: firstYoutubeLink, title: youtubeLinks.items[0].snippet.title };
+      ? {
+          url: `https://www.youtube.com/watch?v=${youtubeLinks.items[0].id.videoId}`,
+          title: youtubeLinks.items[0].snippet.title,
+        }
+      : { url: "no link", title: "no title" };
+  return firstYoutubeLink;
 };
