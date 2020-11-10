@@ -1,6 +1,5 @@
 import { Message } from "discord.js";
 import fetch from "node-fetch";
-import * as config from "../config.json";
 
 export enum MessageCommand {
   PLAY = "!play",
@@ -26,7 +25,7 @@ export const deleteMessage = (message: Message) => {
 
 export const getYoutubeUrl = async (keywords: string) => {
   const response = await fetch(
-    `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${keywords}&type=video&key=${config.API_KEY_YOUTUBE}`
+    `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${keywords}&type=video&key=${process.env.API_KEY_YOUTUBE}`
   );
   const youtubeLinks = await response.json();
 

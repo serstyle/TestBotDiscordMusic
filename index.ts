@@ -1,5 +1,4 @@
 import { Client, Message } from "discord.js";
-import * as config from "./config.json";
 import { isQueueEmpty, check, isLastMusic } from "./helpers/conditions";
 
 import {
@@ -100,4 +99,4 @@ client.on("message", async (message) => {
   }
 });
 
-client.login(config.token);
+client.login(process.env.token);
