@@ -98,5 +98,5 @@ client.on("message", async (message) => {
       break;
   }
 });
-
+console.log(process.env.token)
 client.login(process.env.token);
