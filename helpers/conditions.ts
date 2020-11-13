@@ -9,7 +9,7 @@ export const isWrongChannel = async (message: Message) => {
   }
 };
 export const isWrongUser = async (message: Message) => {
-  if (message.author.id !== '336795736236752898') {
+  if (process.env.BOT_PERSO && message.author.id !== '336795736236752898') {
     deleteMessage(message);
     return message.reply("T KI PTDR 😐 SEUL GRAND MAITRE SER PEUT ME PARLER, utilise AKOS avec '!play' ");
   }
@@ -27,7 +27,7 @@ export const isQueueEmpty = (queue: MusicToStream[]) =>
 
 export const check = async (message: Message) => {
   const wrongUser = await isWrongUser(message);
-  if (process.env.BOT_PERSO && wrongUser) return wrongUser;
+  if (wrongUser) return wrongUser;
   const wrongChannel = await isWrongChannel(message);
   if (wrongChannel) return wrongChannel;
   const userInVC = await isUserInAVoiceChanel(message);
