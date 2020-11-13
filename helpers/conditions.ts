@@ -8,6 +8,12 @@ export const isWrongChannel = async (message: Message) => {
     return message.reply("Va dans le channel music pour controler la music 😐");
   }
 };
+export const isWrongUser = async (message: Message) => {
+  if (message.author.id !== '336795736236752898') {
+    deleteMessage(message);
+    return message.reply("T KI PTDR 😐 SEUL GRAND MAITRE SER PEUT ME PARLER, utilise AKOS avec '!play' ");
+  }
+};
 
 export const isUserInAVoiceChanel = (message: Message) => {
   if (!voiceChannel(message)) {
@@ -18,7 +24,10 @@ export const isUserInAVoiceChanel = (message: Message) => {
 export const isQueueEmpty = (queue: MusicToStream[]) =>
   !queue || queue.length === 0;
 
+
 export const check = async (message: Message) => {
+  const wrongUser = await isWrongUser(message);
+  if (process.env.BOT_PERSO && wrongUser) return wrongUser;
   const wrongChannel = await isWrongChannel(message);
   if (wrongChannel) return wrongChannel;
   const userInVC = await isUserInAVoiceChanel(message);

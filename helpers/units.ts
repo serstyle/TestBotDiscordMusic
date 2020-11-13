@@ -2,10 +2,12 @@ import { Message } from "discord.js";
 import fetch from "node-fetch";
 
 export enum MessageCommand {
-  PLAY = "!play",
-  STOP = "!stop",
-  PLAYLIST = "!playlist",
-  SKIP = "!skip",
+  PLAY = "play",
+  PLAY_PLAYLIST = "plays",
+  STOP = "stop",
+  PLAYLIST = "playlist",
+  SKIP = "skip",
+  GO_TO = "goto"
 }
 
 export const voiceChannel = (message: Message) => {
@@ -21,6 +23,18 @@ export const deleteMessage = (message: Message) => {
   } catch (e) {
     console.error(e);
   }
+};
+
+export const getYoutubePlaylist = async (keywords: string):Promise<Array<any>> => {
+  const response = await fetch(
+    `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${keywords}&maxResults=50&key=${process.env.API_KEY_YOUTUBE}`
+  );
+  const youtubeLinks = await response.json();
+
+  console.log(keywords);
+  console.log("json parse: ".toUpperCase(), youtubeLinks);
+
+  return youtubeLinks.items;
 };
 
 export const getYoutubeUrl = async (keywords: string) => {
