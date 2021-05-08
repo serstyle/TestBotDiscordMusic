@@ -40,7 +40,7 @@ export class ServerDiscord {
     });
   }
 
-  dispatcherAction(event: "finish" | string, listener: () => void) {
+  dispatcherAction(event: "finish" | string, listener: (arg: any) => void) {
     this.dispatcher.on(event, listener);
   }
 
@@ -67,6 +67,7 @@ export class ServerDiscord {
         if (isQueueEmpty(serverQueue)) return;
         this.playMusic(vc, message);
       });
+      this.dispatcherAction('error', error =>{ console.log(error)})
     });
   }
 }
