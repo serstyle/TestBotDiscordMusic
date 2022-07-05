@@ -13,7 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@discordjs/opus": "^0.5.0",
+    "@discordjs/opus": "^0.8.0",
     "@types/node": "^14.0.10",
     "@types/node-fetch": "^2.5.7",
     "discord.js": "^12.5.3",
